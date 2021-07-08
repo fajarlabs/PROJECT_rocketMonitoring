@@ -22,5 +22,5 @@ Bahasa pemrograman yang digunakan : <br />
 - C/C++ untuk minsys & sensor<Br />
 - Python untuk proses parsing data & analisis<br />
 - Javascript / Nodejs untuk membuat web interaktif<br />
-- Jika diperlukan untuk GUI desktop/mobile apps/ komputasi berat, bisa menggunakan Java / Go untuk proses yang bersifat konkuren.<Br />
+- GUI desktop/mobile apps/ komputasi berat, bisa menggunakan Java / Go untuk proses yang bersifat konkuren.<Br />
 - DB MySQL/SQLite/Postgre<br />
