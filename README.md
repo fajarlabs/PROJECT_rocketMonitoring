@@ -16,3 +16,11 @@ Riset penelitian pergerakan roket
 # How it Works
 Untuk transmisi video terpisah karena dibutuhkan data berupa video stream setelah itu video akan di terima dalam bentuk audio video analog dan di konversi agar audio video tersebut bisa di gunakan / digabungkan kedalam program, jarak transmisi video +-1-3KM. <br /><br />
 Untuk transmisi data menggunakan LoRa dengan jarak +-1-3KM tanpa ada halangan. Diterima oleh module Lora Receiver Module atau menggunakan Gateway (jika dimungkinkan transmisi jarak jauh dengan menggunakan protocol MQTT) Data akan dibuat sedemikian rupa agar berbentuk kecil sehingga data yang di transmit lebih ringan. Data akan diparsing setelah itu data akan di masukkan kedalam program untuk di analisa dan dimasukkan kedalam dashboard.
+
+# Code
+Bahasa pemrograman yang digunakan : <br />
+- C/C++ untuk minsys & sensor<Br />
+- Python untuk proses parsing data & analisis<br />
+- Javascript / Nodejs untuk membuat web interaktif<br />
+- Jika diperlukan untuk GUI desktop/mobile apps/ komputasi berat, bisa menggunakan Java / Go untuk proses yang bersifat konkuren.<Br />
+- DB MySQL/SQLite/Postgre<br />
