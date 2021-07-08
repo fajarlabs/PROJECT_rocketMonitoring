@@ -8,7 +8,7 @@ Riset penelitian pergerakan roket
 - Atmega / STM TX & RX module <Br />
 - FPV TX-RX 5.8Ghz 600mW Range 1-3KM estimated <br />
 - RF - SX1278 LoRa Module <br />
-- Video Capture <Br />
+- Video Capture to USB <Br />
 - BMP280 (altitude, temperature, pressure) <br />
 - ADXL345 (three axis accelation gravity) + GY-271 HMC58831 (magnetometer compas) for azimuth <br />
 - GPS Module <br />
