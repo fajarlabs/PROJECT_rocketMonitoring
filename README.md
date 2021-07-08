@@ -11,6 +11,7 @@ Riset penelitian pergerakan roket
 - Video Capture <Br />
 - BMP280 (altitude, temperature, pressure) <br />
 - ADXL345 (three axis accelation gravity) + GY-271 HMC58831 (magnetometer compas) for azimuth <br />
+- GPS Module <br />
 
 # How it Works
 Untuk transmisi video terpisah karena dibutuhkan data berupa video stream setelah itu video akan di terima dalam bentuk audio video analog dan di konversi agar audio video tersebut bisa di gunakan / digabungkan kedalam program, jarak transmisi video +-1-3KM. <br /><br />
