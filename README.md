@@ -1,4 +1,4 @@
-# project03-rocketMonitoring
+# Rocket Monitoring
 Riset penelitian pergerakan roket
 
 # Wiring Diagram
