@@ -26,10 +26,11 @@ Bahasa pemrograman yang digunakan : <br />
 - DB MySQL/SQLite/Postgre<br />
 
 # Buy Parts
-1.) Arduino Lily 2 Buah (RX+TX) : https://www.tokopedia.com/rajacell/arduino-lilypad-lily-pad-328-atmega328-5v-16mhz-development-board?whid=0 <br />
-2.) Lora 1276 Transreceiver 3 Buah (1 RX, 1TX command) 1 TX data : https://www.tokopedia.com/hwthinker/modul-sx1276-wireless-transceiver-lora-915mhz-915-mhz-long-range?whid=0 <br />
+1.) Dev board lora 915 2 Buah : https://www.tokopedia.com/cosmic-iot/lora-arduino-shield-dragino-clone-915mhz-915-mhz-rfm96-rfm95-rfm-95-96?refined=true&src=topads&whid=0 <br />
+    Digunakan untuk transmit data command dari bawah ke roket, untuk opsi ini dipakai yang versi shield besar, karena lebih cepat untuk proses development atau bisa juga menggunakan dragino lora mini 915Mhz cuma di toko jarang. <br />
+2.) Lora 1276 Transreceiver 1 Buah : https://www.tokopedia.com/hwthinker/modul-sx1276-wireless-transceiver-lora-915mhz-915-mhz-long-range?whid=0 <br />
 3.) Antena Lora (tergantung kondisi hanya buat riset atau diganti nanti antena di roketnya) : https://www.tokopedia.com/cosmic-iot/antenna-lora-sigfox-915-mhz-915mhz-sma-male-3db-3-db-omni-directional?src=topads<br />
-4.) Lora chip breakout 3 Buah : https://www.tokopedia.com/cosmic-iot/lora-chip-breakout-pcb-untuk-rfm95-rfm96-sx1276-rfm-95-96-tanpa-chip?refined=true&src=topads&whid=0 <br />
+4.) Lora chip breakout 1 Buah : https://www.tokopedia.com/cosmic-iot/lora-chip-breakout-pcb-untuk-rfm95-rfm96-sx1276-rfm-95-96-tanpa-chip?refined=true&src=topads&whid=0 <br />
 5.) Kamera FPV : https://www.tokopedia.com/anekahoby/c4-fpv-ccd-camera-700tvl-mini-cmos-camera-2-8-mm-for-rc-quadcopter?whid=0 <br />
 6.) Av TransmitReceive Kamera : https://www.tokopedia.com/anekahoby/ts832-rc832-48ch-fpv-5-8ghz-600mw-wireless-av-transmitter-receiver <br />
 7.) BMP280 sensor : https://www.tokopedia.com/greatitacc/bmp280-3-3v-digital-barometric-pressure-altitude-sensor?src=topads <br />
@@ -38,6 +39,9 @@ Bahasa pemrograman yang digunakan : <br />
 10.) GPS Module neo6mv2 : https://www.tokopedia.com/rajacell/ublox-neo-6m-gps-module-neo6mv2-with-flight-control-for-arduino?refined=true&whid=0 <br />
 11.) Mega duino Expansion board : https://www.tokopedia.com/bustan/arduino-mega-breadboard-v3-project-proto-board-prototype-shield?whid=0 <br />
 12.) Ardu Mega : https://www.tokopedia.com/bustan/arduino-mega-2560-r3-ch340g-ch340-ch-340-340g-include-usb-data-cable <br />
+    module ini dipakai untuk membaca sensor-sensor yang dikirim ke gateway melalui lora. <br />
+13.) Arduino untuk dev board command dari bawah dan posisi di roket 2 buah : https://www.tokopedia.com/freelab/arduino-uno-r3-clone-smd?whid=0<br />
+ini dipakai untuk dev lora command <br />
 
 
 
