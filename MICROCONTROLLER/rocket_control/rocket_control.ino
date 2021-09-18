@@ -5,10 +5,35 @@
 #include <LoRa.h>
 //Connect with pin 18 and 19
 #include <TinyGPS.h>
-float lat,lon;
+
+// init timing
+const long interval = 1000; 
+unsigned long previousMillis_QMC5883LCompass = 0;
+unsigned long previousMillis_Adafruit_BMP280 = 0;
+unsigned long previousMillis_ADXL345 = 0;
+unsigned long previousMillis_Lora = 0;
+unsigned long previousMillis_GpsNeo7 = 0;
+
+// init data state
+int state_x = 0;
+int state_y = 0;
+int state_z = 0;
+int state_azimuth = 0;
+int state_bearing = 0;
+float state_temperature = 0;
+float state_pressure = 0;
+float state_altitude = 0;
+float state_aclx = 0;
+float state_acly = 0;
+float state_aclz = 0;
+float state_gps_latitude = 0;
+float state_gps_longitude = 0;
+float state_gps_altitude = 0;
+
+// init GPS
 TinyGPS gps; // create gps object
 
-// Compas module
+// init Compas
 QMC5883LCompass compass;
 
 // BMP280 module
@@ -17,19 +42,17 @@ Adafruit_BMP280 bmp; // I2C
 // ADXL345 module
 int ADXL345 = 0x53; // The ADXL345 sensor I2C address
 
-int counter = 0;
-
 void setup() {
   Serial.begin(57600); // connect serial
-  Serial.println(F("Serial has been successfully set to 57600!"));
+  Serial.println(F("<<MSG:Serial has been successfully set to 57600>>"));
 
   // Initializing & check GY-270
   compass.init();
-  Serial.println(F("Compass initialization was successful!"));
+  Serial.println(F("<<MSG:Compass initialization was successful>>"));
 
   // Check BMP280
   if (!bmp.begin()) {
-    Serial.println(F("Could not find a valid BMP280 sensor, check wiring or try a different address!"));
+    Serial.println(F("<<MSG:Could not find a valid BMP280 sensor, check wiring or try a different address>>"));
     while (1) delay(10);
   }
   /* Default settings from datasheet. */
@@ -38,7 +61,7 @@ void setup() {
                   Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
                   Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
-  Serial.println(F("BMP280 initialization was successful!"));
+  Serial.println(F("<<MSG:BMP280 initialization was successful>>"));
   
   // Check ADXL345 & Set high measuring
   Wire.begin(); // Initiate the Wire library
@@ -52,77 +75,78 @@ void setup() {
 
   // Check lora connectifity
   if (!LoRa.begin(915E6)) {
-    Serial.println("Starting LoRa failed!");
+    Serial.println("<<ERR:Starting LoRa failed>>");
     while (1);
   }
-  Serial.println(F("The sensor accelerator has been successfully activated!"));
+  Serial.println(F("<<MSG:The sensor accelerator has been successfully activated>>"));
 }
 
-void loop() {
-    // === Read gps data === //
-//    while(Serial1.available()){ // check for gps data
-//      if(gps.encode(Serial1.read())) { // encode gps data 
-//        gps.f_get_position(&lat,&lon); // get latitude and longitude
-//        Serial.print("Position: ");
-//        //Latitude
-//        Serial.print("Latitude: ");
-//        Serial.print(lat,6);
-//        Serial.print(",");
-//        //Longitude
-//        Serial.print("Longitude: ");
-//        Serial.println(lon,6); 
-//      }
-//    }
-    
-    // === Read compass data === //
-    compass.read();
-    // get azimuth
-    byte azimuth = compass.getAzimuth();
-    
-    Serial.print("Azimuth: ");
-    Serial.println(azimuth);
-    
-    // get direction
-    char myArray[3];
-    compass.getDirection(myArray, azimuth);
-    
-    Serial.print("Direction : ");
-    Serial.print(myArray[0]);
-    Serial.print(myArray[1]);
-    Serial.println(myArray[2]);
-    
-    // get bearing
-    byte bearing = compass.getBearing(azimuth);
-    
-    Serial.print("Bearing: ");
-    Serial.println(bearing);
-    
-    // Return XYZ readings
-    int x = compass.getX();
-    int y = compass.getY();
-    int z = compass.getZ();
-    
-    Serial.print("XYZ reading: ");
-    Serial.print("X: ");
-    Serial.print(x);
-    Serial.print(" Y: ");
-    Serial.print(y);
-    Serial.print(" Z: ");
-    Serial.print(z);
-    Serial.println();    
-    
+void readCompass() {
+  int x, y, z, a, b;
+  char myArray[3];
+  String direct;
+  
+  compass.read();
+  
+  x = compass.getX();
+  y = compass.getY();
+  z = compass.getZ();
+  a = compass.getAzimuth();
+  b = compass.getBearing(a);
+
+  compass.getDirection(myArray, a);
+  direct = String(myArray[0])+""+String(myArray[1])+""+String(myArray[2]);
+
+  state_x = x;
+  state_y = y;
+  state_z = z;
+  state_azimuth = a;
+  state_bearing = b;
+
+  /*
+  Serial.print("X: ");
+  Serial.print(x);
+
+  Serial.print(" Y: ");
+  Serial.print(y);
+
+  Serial.print(" Z: ");
+  Serial.print(z);
+
+  Serial.print(" Azimuth: ");
+  Serial.print(a);
+
+  Serial.print(" Bearing: ");
+  Serial.print(b);
+
+  Serial.print(" Direction: ");
+  Serial.print(direct);
+
+  Serial.println();
+  */
+}
+
+void readBarometricSensor() {
     // === Read barometric data === //
     float temperature = bmp.readTemperature();  // in *C
     float pressure = bmp.readPressure();        // in Pa
     float altitude = bmp.readAltitude(1013.25); // in m, Adjusted to local forecast!
 
+    state_temperature = temperature;
+    state_pressure = pressure;
+    state_altitude = altitude;
+
+    /*
     Serial.print("Temperature: ");
     Serial.print(temperature);
     Serial.print(" Pressure:");
     Serial.print(pressure);
     Serial.print(" Altitude:");
     Serial.println(altitude);
-    
+    */
+}
+
+void readAcceleratorMeter() {
     // === Read accelerometer data === //
     Wire.beginTransmission(ADXL345);
     Wire.write(0x32); // Start with register 0x32 (ACCEL_XOUT_H)
@@ -134,24 +158,93 @@ void loop() {
     Y_out = Y_out/256;
     float Z_out = ( Wire.read()| Wire.read() << 8); // Z-axis value
     Z_out = Z_out/256;
-    
+
+    state_aclx = X_out;
+    state_acly = Y_out;
+    state_aclz = Z_out;
+
+    /*
     Serial.print("Xa=");
     Serial.print(X_out);
     Serial.print(" Ya=");
     Serial.print(Y_out);
     Serial.print(" Za=");
     Serial.println(Z_out);
+    */
+}
 
+void loraSendData(String data) {
     Serial.print("Sending packet: ");
-    Serial.println(counter);
-  
     // send packet
     LoRa.beginPacket();
-    LoRa.print("hello ");
-    LoRa.print(counter);
+    LoRa.print(data);
     LoRa.endPacket();
-  
-    counter++;
+}
 
-    delay(500);
+String getBuildData() {
+    String delimiter = ",";
+    String result = "<<DATA:";
+    result += String(state_x);
+    result += delimiter;
+    result += String(state_y);
+    result += delimiter;
+    result += String(state_z);
+    result += delimiter;
+    result += String(state_azimuth);
+    result += delimiter;
+    result += String(state_bearing);
+    result += delimiter;
+    result += String(state_temperature);
+    result += delimiter;
+    result += String(state_pressure);
+    result += delimiter;
+    result += String(state_altitude);
+    result += delimiter;
+    result += String(state_aclx);
+    result += delimiter;
+    result += String(state_acly);
+    result += delimiter;
+    result += String(state_aclz);
+    result += delimiter;
+    result += String(state_gps_latitude);
+    result += delimiter;
+    result += String(state_gps_longitude);
+    result += delimiter;
+    result += String(state_gps_altitude);
+    result += ">>";
+
+    return result;
+}
+
+void loop() {
+    unsigned long currentMillis = millis();
+
+    // timing GPS
+    if (currentMillis - previousMillis_GpsNeo7 >= interval) {
+        previousMillis_GpsNeo7 = currentMillis;
+    }
+
+    // timing compass
+    if (currentMillis - previousMillis_QMC5883LCompass >= interval) {
+        previousMillis_QMC5883LCompass = currentMillis;
+        readCompass();
+    }
+
+    // timing barometric sensor
+    if (currentMillis - previousMillis_Adafruit_BMP280 >= interval) {
+        previousMillis_Adafruit_BMP280 = currentMillis;
+        readBarometricSensor();
+    }
+
+    // timing accelerator meter
+    if (currentMillis - previousMillis_ADXL345 >= interval) {
+        previousMillis_ADXL345 = currentMillis;
+        readAcceleratorMeter();
+    }
+
+    // timing sending lora
+    if (currentMillis - previousMillis_Lora >= interval) {
+        previousMillis_Lora = currentMillis;
+        loraSendData(getBuildData());
+    }
 }
