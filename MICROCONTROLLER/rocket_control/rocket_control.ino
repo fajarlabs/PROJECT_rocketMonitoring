@@ -42,13 +42,16 @@ Adafruit_BMP280 bmp; // I2C
 // ADXL345 module
 int ADXL345 = 0x53; // The ADXL345 sensor I2C address
 
+// Baudrate Serial
+const int baudrateSerial = 57600;
+
 void setup() {
-  Serial.begin(57600); // connect serial
-  Serial.println(F("<<MSG:Serial has been successfully set to 57600>>"));
+  Serial.begin(baudrateSerial); // connect serial
+  Serial.println("<<MSG:Serial has been successfully set to "+String(baudrateSerial)+">>");
 
   // Initializing & check GY-270
   compass.init();
-  Serial.println(F("<<MSG:Compass initialization was successful>>"));
+  Serial.println("<<MSG:Compass initialization was successful>>");
 
   // Check BMP280
   if (!bmp.begin()) {
@@ -61,7 +64,7 @@ void setup() {
                   Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
                   Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
-  Serial.println(F("<<MSG:BMP280 initialization was successful>>"));
+  Serial.println("<<MSG:BMP280 initialization was successful>>");
   
   // Check ADXL345 & Set high measuring
   Wire.begin(); // Initiate the Wire library
@@ -78,7 +81,7 @@ void setup() {
     Serial.println("<<ERR:Starting LoRa failed>>");
     while (1);
   }
-  Serial.println(F("<<MSG:The sensor accelerator has been successfully activated>>"));
+  Serial.println("<<MSG:The sensor accelerator has been successfully activated>>");
 }
 
 void readCompass() {
