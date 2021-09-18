@@ -16,13 +16,14 @@ void setup() {
 void loop() {
   // try to parse packet
   int packetSize = LoRa.parsePacket();
+  String str = "";
   if (packetSize) {
     while (LoRa.available()) {
-      Serial.print((char)LoRa.read());
+      str += String((char)LoRa.read());
     }
-    Serial.print("<<RSSI:");
-    Serial.print(LoRa.packetRssi());
-    Serial.print(">>");
-    Serial.println();
+    str.replace(">>", ",");
+    str += LoRa.packetRssi();
+    str += ">>";
+    Serial.println(str);
   }
 }

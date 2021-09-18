@@ -185,6 +185,7 @@ void loraSendData(String data) {
 }
 
 String getBuildData() {
+    // x,y,z,azimuth,bearing,temperature,pressure,altitude,aclx,acly,aclz,gps latitude,gps longitude,gps altitude
     String delimiter = ",";
     String result = "<<DATA:";
     result += String(state_x);
