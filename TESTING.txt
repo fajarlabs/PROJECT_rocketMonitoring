@@ -1,0 +1,133 @@
+/***************************************************************************
+  This is a library for the BMP280 humidity, temperature & pressure sensor
+
+  Designed specifically to work with the Adafruit BMP280 Breakout
+  ----> http://www.adafruit.com/products/2651
+
+  These sensors use I2C or SPI to communicate, 2 or 4 pins are required
+  to interface.
+
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit andopen-source hardware by purchasing products
+  from Adafruit!
+
+  Written by Limor Fried & Kevin Townsend for Adafruit Industries.
+  BSD license, all text above must be included in any redistribution
+ ***************************************************************************/
+
+#include <Wire.h>
+#include <SPI.h>
+#include <Adafruit_BMP280.h>
+#include <QMC5883LCompass.h>
+
+// =========== GY270 ====================
+QMC5883LCompass compass;
+
+// =========== BPM280 ====================
+Adafruit_BMP280 bmp; // I2C
+
+// =========== ADXL345 ===================
+int ADXL345 = 0x53; // The ADXL345 sensor I2C address
+
+void setup() {
+  Serial.begin(9600); // Initiate serial communication for printing the results on the Serial monitor
+  
+  // Check GY-270
+  compass.init();
+  
+  // Check ADXL345 & Set high measuring
+  Wire.begin(); // Initiate the Wire library
+  // Set ADXL345 in measuring mode
+  Wire.beginTransmission(ADXL345); // Start communicating with the device 
+  Wire.write(0x2D); // Access/ talk to POWER_CTL Register - 0x2D
+  // Enable measurement
+  Wire.write(8); // (8dec -> 0000 1000 binary) Bit D3 High for measuring enable 
+  Wire.endTransmission();
+  delay(10);
+
+  // Check BMP280
+  if (!bmp.begin()) {
+    Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
+                      "try a different address!"));
+    while (1) delay(10);
+  }
+
+  /* Default settings from datasheet. */
+  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
+                  Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
+                  Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
+                  Adafruit_BMP280::FILTER_X16,      /* Filtering. */
+                  Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
+}
+
+void loop() {
+    // === Read compass data === //
+    compass.read();
+    // get azimuth
+    byte azimuth = compass.getAzimuth();
+    
+    Serial.print("Azimuth: ");
+    Serial.println(azimuth);
+    
+    // get direction
+    char myArray[3];
+    compass.getDirection(myArray, azimuth);
+    
+    Serial.print("Direction : ");
+    Serial.print(myArray[0]);
+    Serial.print(myArray[1]);
+    Serial.println(myArray[2]);
+    
+    // get bearing
+    byte bearing = compass.getBearing(azimuth);
+    
+    Serial.print("Bearing: ");
+    Serial.println(bearing);
+    
+    // Return XYZ readings
+    int x = compass.getX();
+    int y = compass.getY();
+    int z = compass.getZ();
+    
+    Serial.print("XYZ reading: ");
+    Serial.print("X: ");
+    Serial.print(x);
+    Serial.print(" Y: ");
+    Serial.print(y);
+    Serial.print(" Z: ");
+    Serial.print(z);
+    Serial.println();    
+    
+    // === Read barometric data === //
+    float temperature = bmp.readTemperature();  // in *C
+    float pressure = bmp.readPressure();        // in Pa
+    float altitude = bmp.readAltitude(1013.25); // in m, Adjusted to local forecast!
+
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.print(" Pressure:");
+    Serial.print(pressure);
+    Serial.print(" Altitude:");
+    Serial.println(altitude);
+    
+    // === Read accelerometer data === //
+    Wire.beginTransmission(ADXL345);
+    Wire.write(0x32); // Start with register 0x32 (ACCEL_XOUT_H)
+    Wire.endTransmission(false);
+    Wire.requestFrom(ADXL345, 6, true); // Read 6 registers total, each axis value is stored in 2 registers
+    float X_out = ( Wire.read()| Wire.read() << 8); // X-axis value
+    X_out = X_out/256; //For a range of +-2g, we need to divide the raw values by 256, according to the datasheet
+    float Y_out = ( Wire.read()| Wire.read() << 8); // Y-axis value
+    Y_out = Y_out/256;
+    float Z_out = ( Wire.read()| Wire.read() << 8); // Z-axis value
+    Z_out = Z_out/256;
+    
+    Serial.print("Xa=");
+    Serial.print(X_out);
+    Serial.print(" Ya=");
+    Serial.print(Y_out);
+    Serial.print(" Za=");
+    Serial.println(Z_out);
+    
+    delay(500);
+}
