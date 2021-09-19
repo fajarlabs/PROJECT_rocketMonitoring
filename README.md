@@ -12,7 +12,10 @@ Riset penelitian pergerakan roket
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/WhatsApp%20Image%202021-09-18%20at%2012.25.23%20PM.jpeg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/WhatsApp%20Image%202021-09-18%20at%2012.25.23%20PM.jpeg?raw=true" width="700" height="400" /></a>
 # Receive Data
 Format data : <br />
-<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, aclx, acly, aclz, gps latitude, gps longitude, gps altitude,rssi>><br />
+''''''
+<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, aclx, acly, aclz, gps latitude, gps longitude, gps altitude,rssi>>
+''''''
+<br />
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-19%20220510.jpg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-19%20220510.jpg?raw=true" width="700" height="400" /></a>
 
 
