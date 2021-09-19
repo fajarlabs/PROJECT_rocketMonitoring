@@ -22,7 +22,7 @@ int const RELAY = A3;
 bool is_relay_on = false;
 
 // init timing
-const long interval = 333; 
+const long interval = 500; 
 unsigned long previousMillis_QMC5883LCompass = 0;
 unsigned long previousMillis_Adafruit_BMP280 = 0;
 unsigned long previousMillis_ADXL345 = 0;
@@ -42,9 +42,12 @@ float state_altitude = 0;
 float state_aclx = 0;
 float state_acly = 0;
 float state_aclz = 0;
-double state_gps_latitude = 0;
-double state_gps_longitude = 0;
-double state_gps_altitude = 0;
+float state_gps_latitude = 0;
+float state_gps_longitude = 0;
+float state_gps_altitude = 0;
+int state_gps_sat_value = 0;
+float state_gps_course = 0;
+float state_gps_speed = 0;
 String directional = "";
 
 // init Compas
@@ -102,6 +105,10 @@ void setup() {
     while (1);
   }
   Serial.println("<<MSG:The sensor accelerator has been successfully activated>>");
+}
+
+void dbg(String data) {
+  Serial.println("<<DEBUG:"+data+">>");
 }
 
 void readCompass() {
@@ -238,6 +245,12 @@ String getBuildData() {
     result += String(state_gps_longitude);
     result += delimiter;
     result += String(state_gps_altitude);
+    result += delimiter;
+    result += String(state_gps_sat_value);
+    result += delimiter;
+    result += String(state_gps_course);
+    result += delimiter;
+    result += String(state_gps_speed);
     result += ">>";
 
     return result;
@@ -250,15 +263,24 @@ void readGPS() {
         state_gps_latitude = gps.location.lat();
         state_gps_longitude = gps.location.lng();
         state_gps_altitude = gps.altitude.meters();
-        dbg(String(state_gps_latitude)+","+String(state_gps_longitude)+","+String(state_gps_altitude));
+        state_gps_sat_value = gps.satellites.value();
+        state_gps_course = gps.course.deg();
+        state_gps_speed = gps.speed.kmph();
+        Serial.print("<<GPS:");
+        Serial.print(gps.location.lat(), 6);
+        Serial.print(F(","));
+        Serial.print(gps.location.lng(), 6);
+        Serial.print(F(","));
+        Serial.print(gps.altitude.meters(), 6);
+        Serial.print(F(","));
+        Serial.print(gps.course.deg(), 6);
+        Serial.print(F(","));
+        Serial.print(gps.speed.kmph(), 6);
+        Serial.println(">>");
       } else {
         Serial.println("<<ERR:Location not available>>");
       }
     }
-}
-
-void dbg(String data) {
-  Serial.println("<<DEBUG:"+data+">>");
 }
 
 void loop() {
