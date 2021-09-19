@@ -3,16 +3,32 @@
 #include <Adafruit_BMP280.h>
 #include <QMC5883LCompass.h>
 #include <LoRa.h>
-//Connect with pin 18 and 19
-#include <TinyGPS.h>
+#include <TinyGPS++.h> 
+#include <SoftwareSerial.h> 
+
+// Choose two Arduino pins to use for software serial
+const int RXPin = 4; //Connect ke TX GPS
+const int TXPin = 3; //Connect ke RX GPS
+const long GPSBaud = 9600; // gps baudrate
+
+// Init GPS++
+ TinyGPSPlus gps;
+
+// Mmebuat koneksi serial dengan nama "gpsSerial"
+ SoftwareSerial gpsSerial(RXPin, TXPin);
+
+// relay
+int const RELAY = A3;
+bool is_relay_on = false;
 
 // init timing
-const long interval = 1000; 
+const long interval = 333; 
 unsigned long previousMillis_QMC5883LCompass = 0;
 unsigned long previousMillis_Adafruit_BMP280 = 0;
 unsigned long previousMillis_ADXL345 = 0;
 unsigned long previousMillis_Lora = 0;
 unsigned long previousMillis_GpsNeo7 = 0;
+unsigned long previousMillis_Relay = 0;
 
 // init data state
 int state_x = 0;
@@ -26,12 +42,10 @@ float state_altitude = 0;
 float state_aclx = 0;
 float state_acly = 0;
 float state_aclz = 0;
-float state_gps_latitude = 0;
-float state_gps_longitude = 0;
-float state_gps_altitude = 0;
-
-// init GPS
-TinyGPS gps; // create gps object
+double state_gps_latitude = 0;
+double state_gps_longitude = 0;
+double state_gps_altitude = 0;
+String directional = "";
 
 // init Compas
 QMC5883LCompass compass;
@@ -43,11 +57,17 @@ Adafruit_BMP280 bmp; // I2C
 int ADXL345 = 0x53; // The ADXL345 sensor I2C address
 
 // Baudrate Serial
-const int baudrateSerial = 57600;
+const long baudrateSerial = 115200;
 
 void setup() {
   Serial.begin(baudrateSerial); // connect serial
   Serial.println("<<MSG:Serial has been successfully set to "+String(baudrateSerial)+">>");
+
+  //relay 
+  pinMode(RELAY, OUTPUT);
+  
+  // gps serial baudrate
+  gpsSerial.begin(GPSBaud);
 
   // Initializing & check GY-270
   compass.init();
@@ -105,6 +125,7 @@ void readCompass() {
   state_z = z;
   state_azimuth = a;
   state_bearing = b;
+  directional = direct;
 
   /*
   Serial.print("X: ");
@@ -177,11 +198,11 @@ void readAcceleratorMeter() {
 }
 
 void loraSendData(String data) {
-    Serial.print("Sending packet: ");
     // send packet
     LoRa.beginPacket();
     LoRa.print(data);
     LoRa.endPacket();
+    Serial.println("<<MSG:Package has been sent>>");
 }
 
 String getBuildData() {
@@ -197,6 +218,8 @@ String getBuildData() {
     result += String(state_azimuth);
     result += delimiter;
     result += String(state_bearing);
+    result += delimiter;
+    result += directional;
     result += delimiter;
     result += String(state_temperature);
     result += delimiter;
@@ -220,12 +243,45 @@ String getBuildData() {
     return result;
 }
 
+void readGPS() {
+  while (gpsSerial.available() > 0)
+    if (gps.encode(gpsSerial.read())) {
+      if (gps.location.isValid()){
+        state_gps_latitude = gps.location.lat();
+        state_gps_longitude = gps.location.lng();
+        state_gps_altitude = gps.altitude.meters();
+        dbg(String(state_gps_latitude)+","+String(state_gps_longitude)+","+String(state_gps_altitude));
+      } else {
+        Serial.println("<<ERR:Location not available>>");
+      }
+    }
+}
+
+void dbg(String data) {
+  Serial.println("<<DEBUG:"+data+">>");
+}
+
 void loop() {
     unsigned long currentMillis = millis();
 
     // timing GPS
+    if (currentMillis - previousMillis_Relay >= interval) {
+        previousMillis_Relay = currentMillis;
+        /*
+        if(is_relay_on == false){
+          is_relay_on = true;
+          digitalWrite(A3, HIGH);
+        } else {
+          is_relay_on = false;
+          digitalWrite(A3, LOW);
+        }
+        */
+    }
+
+    // timing GPS
     if (currentMillis - previousMillis_GpsNeo7 >= interval) {
         previousMillis_GpsNeo7 = currentMillis;
+        readGPS();
     }
 
     // timing compass
