@@ -42,12 +42,14 @@ float state_altitude = 0;
 float state_aclx = 0;
 float state_acly = 0;
 float state_aclz = 0;
-float state_gps_latitude = 0;
-float state_gps_longitude = 0;
-float state_gps_altitude = 0;
+
+double state_gps_latitude = 0;
+double state_gps_longitude = 0;
+double state_gps_altitude = 0;
+float state_gps_age = 0;
 int state_gps_sat_value = 0;
-float state_gps_course = 0;
-float state_gps_speed = 0;
+double state_gps_course = 0;
+double state_gps_speed = 0;
 String directional = "";
 
 // init Compas
@@ -97,6 +99,7 @@ void setup() {
   // Enable measurement
   Wire.write(8); // (8dec -> 0000 1000 binary) Bit D3 High for measuring enable 
   Wire.endTransmission();
+  Serial.println("<<MSG:The sensor accelerator has been successfully activated>>");
   delay(10);
 
   // Check lora connectifity
@@ -104,7 +107,7 @@ void setup() {
     Serial.println("<<ERR:Starting LoRa failed>>");
     while (1);
   }
-  Serial.println("<<MSG:The sensor accelerator has been successfully activated>>");
+  Serial.println("<<MSG:The Lora transmitter has been successfully activated>>");
 }
 
 void dbg(String data) {
@@ -240,17 +243,19 @@ String getBuildData() {
     result += delimiter;
     result += String(state_aclz);
     result += delimiter;
-    result += String(state_gps_latitude);
+    result += String(state_gps_latitude,6);
     result += delimiter;
-    result += String(state_gps_longitude);
+    result += String(state_gps_longitude,6);
     result += delimiter;
-    result += String(state_gps_altitude);
+    result += String(state_gps_age);
+    result += delimiter;
+    result += String(state_gps_altitude,2);
     result += delimiter;
     result += String(state_gps_sat_value);
     result += delimiter;
-    result += String(state_gps_course);
+    result += String(state_gps_course, 2);
     result += delimiter;
-    result += String(state_gps_speed);
+    result += String(state_gps_speed, 2);
     result += ">>";
 
     return result;
@@ -262,23 +267,24 @@ void readGPS() {
       if (gps.location.isValid()){
         state_gps_latitude = gps.location.lat();
         state_gps_longitude = gps.location.lng();
-        state_gps_altitude = gps.altitude.meters();
-        state_gps_sat_value = gps.satellites.value();
-        state_gps_course = gps.course.deg();
-        state_gps_speed = gps.speed.kmph();
-        Serial.print("<<GPS:");
-        Serial.print(gps.location.lat(), 6);
-        Serial.print(F(","));
-        Serial.print(gps.location.lng(), 6);
-        Serial.print(F(","));
-        Serial.print(gps.altitude.meters(), 6);
-        Serial.print(F(","));
-        Serial.print(gps.course.deg(), 6);
-        Serial.print(F(","));
-        Serial.print(gps.speed.kmph(), 6);
-        Serial.println(">>");
       } else {
         Serial.println("<<ERR:Location not available>>");
+      }
+      
+      if(gps.altitude.isValid()){
+        state_gps_altitude = gps.altitude.meters();
+      }
+      
+      if(gps.satellites.isValid()){
+        state_gps_sat_value = gps.satellites.value();
+      }
+      
+      if(gps.course.isValid()){
+        state_gps_course = gps.course.deg();
+      }
+      
+      if(gps.speed.isValid()){
+        state_gps_speed = gps.speed.kmph();
       }
     }
 }
