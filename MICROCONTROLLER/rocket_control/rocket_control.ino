@@ -46,11 +46,11 @@ String directional = "";
 
 double state_gps_latitude = 0;
 double state_gps_longitude = 0;
-double state_gps_altitude = 0;
+float state_gps_altitude = 0;
 int state_gps_age = 0;
 int state_gps_sat_value = 0;
-double state_gps_course = 0;
-double state_gps_speed = 0;
+float state_gps_course = 0;
+float state_gps_speed = 0;
 
 
 // init Compas
@@ -263,32 +263,32 @@ String getBuildData() {
 }
 
 void readGPS() {
-  while (gpsSerial.available() > 0) {
-    if (gps.encode(gpsSerial.read())) {
-      if (gps.location.isValid()){
-        state_gps_latitude = gps.location.lat();
-        state_gps_longitude = gps.location.lng();
-        state_gps_age = gps.location.age();
-      } else {
-        Serial.println("<<ERR:Location not available>>");
-      }
+  // smartdelay
+  while (gpsSerial.available() > 0) gps.encode(gpsSerial.read());
+
+  // read data
+  if (gps.location.isValid()){
+    state_gps_latitude = gps.location.lat();
+    state_gps_longitude = gps.location.lng();
+    state_gps_age = gps.location.age();
+  } else {
+    Serial.println("<<ERR:Location not available>>");
+  }
       
-      if(gps.altitude.isValid()){
-        state_gps_altitude = gps.altitude.meters();
-      }
-      
-      if(gps.satellites.isValid()){
-        state_gps_sat_value = gps.satellites.value();
-      }
-      
-      if(gps.course.isValid()){
-        state_gps_course = gps.course.deg();
-      }
-      
-      if(gps.speed.isValid()){
-        state_gps_speed = gps.speed.kmph();
-      }
-    }
+  if(gps.altitude.isValid()){
+    state_gps_altitude = gps.altitude.meters();
+  }
+  
+  if(gps.satellites.isValid()){
+    state_gps_sat_value = gps.satellites.value();
+  }
+  
+  if(gps.course.isValid()){
+    state_gps_course = gps.course.deg();
+  }
+  
+  if(gps.speed.isValid()){
+    state_gps_speed = gps.speed.kmph();
   }
 }
 
