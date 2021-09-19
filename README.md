@@ -10,6 +10,15 @@ Riset penelitian pergerakan roket
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/VIEW_3D.png?raw=true"><img width="400" height="400"  src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/VIEW_3D.png?raw=true" alt="schematic3d" border="0" width="700" height="400" ></a><br />
 # Physical
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/WhatsApp%20Image%202021-09-18%20at%2012.25.23%20PM.jpeg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/WhatsApp%20Image%202021-09-18%20at%2012.25.23%20PM.jpeg?raw=true" width="700" height="400" /></a>
+# Receive Data
+Format data : <br />
+```shell
+<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, aclx, acly, aclz, gps latitude, gps longitude, gps altitude,rssi>>
+```
+Show sample data <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/receive-data.log">View</a>
+
+<br />
+<a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-19%20220510.jpg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-19%20220510.jpg?raw=true" width="700" height="400" /></a>
 
 
 # Components
