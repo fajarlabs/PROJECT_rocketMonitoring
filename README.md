@@ -13,7 +13,9 @@ Riset penelitian pergerakan roket
 # Receive Data
 Format data : <br />
 ```shell
-<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, aclx, acly, aclz, gps latitude, gps longitude, gps altitude,rssi>>
+<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, gps latitude, gps longitude, gps altitude, gps sat value, gps course, gps speed, rssi>>
+
+<<DATA:-1428,-393,205,196,8,  S,31.95,100289.39,86.58,-6.367715,106.800340,535,119.80,8,0.00,2.41,-62>>
 ```
 Show sample data <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/receive-data.log">View</a>
 
