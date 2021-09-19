@@ -42,6 +42,7 @@ float state_altitude = 0;
 float state_aclx = 0;
 float state_acly = 0;
 float state_aclz = 0;
+String directional = "";
 
 double state_gps_latitude = 0;
 double state_gps_longitude = 0;
@@ -50,7 +51,7 @@ int state_gps_age = 0;
 int state_gps_sat_value = 0;
 double state_gps_course = 0;
 double state_gps_speed = 0;
-String directional = "";
+
 
 // init Compas
 QMC5883LCompass compass;
@@ -262,7 +263,7 @@ String getBuildData() {
 }
 
 void readGPS() {
-  while (gpsSerial.available() > 0)
+  while (gpsSerial.available() > 0) {
     if (gps.encode(gpsSerial.read())) {
       if (gps.location.isValid()){
         state_gps_latitude = gps.location.lat();
@@ -288,6 +289,7 @@ void readGPS() {
         state_gps_speed = gps.speed.kmph();
       }
     }
+  }
 }
 
 void loop() {
