@@ -22,7 +22,7 @@ int const RELAY = A3;
 bool is_relay_on = false;
 
 // init timing
-const long interval = 500; 
+const long interval = 333; 
 unsigned long previousMillis_QMC5883LCompass = 0;
 unsigned long previousMillis_Adafruit_BMP280 = 0;
 unsigned long previousMillis_ADXL345 = 0;
@@ -46,7 +46,7 @@ float state_aclz = 0;
 double state_gps_latitude = 0;
 double state_gps_longitude = 0;
 double state_gps_altitude = 0;
-float state_gps_age = 0;
+int state_gps_age = 0;
 int state_gps_sat_value = 0;
 double state_gps_course = 0;
 double state_gps_speed = 0;
@@ -267,6 +267,7 @@ void readGPS() {
       if (gps.location.isValid()){
         state_gps_latitude = gps.location.lat();
         state_gps_longitude = gps.location.lng();
+        state_gps_age = gps.location.age();
       } else {
         Serial.println("<<ERR:Location not available>>");
       }
