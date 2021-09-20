@@ -11,12 +11,6 @@ const int RXPin = 4; //Connect ke TX GPS
 const int TXPin = 3; //Connect ke RX GPS
 const long GPSBaud = 9600; // gps baudrate
 
-// Init GPS++
- TinyGPSPlus gps;
-
-// Mmebuat koneksi serial dengan nama "gpsSerial"
- SoftwareSerial gpsSerial(RXPin, TXPin);
-
 // relay
 int const RELAY = A3;
 bool is_relay_on = false;
@@ -25,7 +19,7 @@ bool is_relay_on = false;
 const long interval = 333; 
 unsigned long previousMillis_QMC5883LCompass = 0;
 unsigned long previousMillis_Adafruit_BMP280 = 0;
-unsigned long previousMillis_ADXL345 = 0;
+// unsigned long previousMillis_ADXL345 = 0;
 unsigned long previousMillis_Lora = 0;
 unsigned long previousMillis_GpsNeo7 = 0;
 unsigned long previousMillis_Relay = 0;
@@ -39,9 +33,11 @@ int state_bearing = 0;
 float state_temperature = 0;
 float state_pressure = 0;
 float state_altitude = 0;
+/*
 float state_aclx = 0;
 float state_acly = 0;
 float state_aclz = 0;
+*/
 String directional = "";
 
 double state_gps_latitude = 0;
@@ -60,10 +56,16 @@ QMC5883LCompass compass;
 Adafruit_BMP280 bmp; // I2C
 
 // ADXL345 module
-int ADXL345 = 0x53; // The ADXL345 sensor I2C address
+// int ADXL345 = 0x53; // The ADXL345 sensor I2C address
 
 // Baudrate Serial
 const long baudrateSerial = 115200;
+
+// Init GPS++
+ TinyGPSPlus gps;
+
+// Mmebuat koneksi serial dengan nama "gpsSerial"
+ SoftwareSerial gpsSerial(RXPin, TXPin);
 
 void setup() {
   Serial.begin(baudrateSerial); // connect serial
@@ -91,7 +93,8 @@ void setup() {
                   Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                   Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
   Serial.println("<<MSG:BMP280 initialization was successful>>");
-  
+
+  /*
   // Check ADXL345 & Set high measuring
   Wire.begin(); // Initiate the Wire library
   // Set ADXL345 in measuring mode
@@ -102,6 +105,7 @@ void setup() {
   Wire.endTransmission();
   Serial.println("<<MSG:The sensor accelerator has been successfully activated>>");
   delay(10);
+  */
 
   // Check lora connectifity
   if (!LoRa.begin(915E6)) {
@@ -109,10 +113,6 @@ void setup() {
     while (1);
   }
   Serial.println("<<MSG:The Lora transmitter has been successfully activated>>");
-}
-
-void dbg(String data) {
-  Serial.println("<<DEBUG:"+data+">>");
 }
 
 void readCompass() {
@@ -181,6 +181,7 @@ void readBarometricSensor() {
     */
 }
 
+/*
 void readAcceleratorMeter() {
     // === Read accelerometer data === //
     Wire.beginTransmission(ADXL345);
@@ -198,15 +199,15 @@ void readAcceleratorMeter() {
     state_acly = Y_out;
     state_aclz = Z_out;
 
-    /*
-    Serial.print("Xa=");
-    Serial.print(X_out);
-    Serial.print(" Ya=");
-    Serial.print(Y_out);
-    Serial.print(" Za=");
-    Serial.println(Z_out);
-    */
+    // Serial.print("Xa=");
+    // Serial.print(X_out);
+    // Serial.print(" Ya=");
+    // Serial.print(Y_out);
+    // Serial.print(" Za=");
+    // Serial.println(Z_out);
 }
+*/
+
 
 void loraSendData(String data) {
     // send packet
@@ -217,7 +218,7 @@ void loraSendData(String data) {
 }
 
 String getBuildData() {
-    // x,y,z,azimuth,bearing,temperature,pressure,altitude,aclx,acly,aclz,gps latitude,gps longitude,gps altitude
+    // x,y,z,azimuth,bearing,temperature,pressure,altitude,gps latitude,gps longitude,gps age, gps altitude, gps sat value, gps course, gps speed
     String delimiter = ",";
     String result = "<<DATA:";
     result += String(state_x);
@@ -238,12 +239,14 @@ String getBuildData() {
     result += delimiter;
     result += String(state_altitude);
     result += delimiter;
+    /*
     result += String(state_aclx);
     result += delimiter;
     result += String(state_acly);
     result += delimiter;
     result += String(state_aclz);
     result += delimiter;
+    */
     result += String(state_gps_latitude,6);
     result += delimiter;
     result += String(state_gps_longitude,6);
@@ -312,7 +315,7 @@ void loop() {
     // timing GPS
     if (currentMillis - previousMillis_GpsNeo7 >= interval) {
         previousMillis_GpsNeo7 = currentMillis;
-        readGPS();
+        //readGPS();
     }
 
     // timing compass
@@ -327,11 +330,13 @@ void loop() {
         readBarometricSensor();
     }
 
+    /*
     // timing accelerator meter
     if (currentMillis - previousMillis_ADXL345 >= interval) {
         previousMillis_ADXL345 = currentMillis;
         readAcceleratorMeter();
     }
+    */
 
     // timing sending lora
     if (currentMillis - previousMillis_Lora >= interval) {
