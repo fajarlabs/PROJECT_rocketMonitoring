@@ -18,9 +18,11 @@ Format data : <br />
 <<DATA:-1428,-393,205,196,8,  S,31.95,100289.39,86.58,-6.367715,106.800340,535,119.80,8,0.00,2.41,-62>>
 ```
 Show sample data <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/receive-data.log">View</a>
-
 <br />
+<b> Receive monitor </b><br />
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-20%20030500.jpg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-20%20030500.jpg?raw=true" width="700" height="400" /></a>
+<b> Transmit monitor </b><br/>
+![image](https://user-images.githubusercontent.com/5867781/133961623-4fc6a201-7a79-41c7-88d8-905e20c020d2.png)
 
 
 # Components
