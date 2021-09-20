@@ -4,6 +4,9 @@ Riset penelitian pergerakan roket
 # Wiring Diagram
 <a href="https://ibb.co/6s905ZT"><img src="https://i.ibb.co/5cphV9S/rocket-launcher-1.png" alt="rocket-launcher-1" border="0"></a><br />
 # Schematic
+```shell
+Sensor accelerator ADXL345 di lepas, dijadikan satu di sensor kompas
+```
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/Schematic_PERISAI_2021-09-18.png?raw=true"><img width="600" height="400"  src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/Schematic_PERISAI_2021-09-18.png?raw=true" alt="schematic" border="0"></a><br />
 # Desain
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/VIEW_2D.png?raw=true"><img width="400" height="400" src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/VIEW_2D.png?raw=true" alt="schematic2d" border="0"></a>
