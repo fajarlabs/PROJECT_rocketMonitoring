@@ -20,7 +20,7 @@ Format data : <br />
 Show sample data <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/receive-data.log">View</a>
 <br />
 <b> Receive monitor </b><br />
-<a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-20%20030500.jpg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-20%20030500.jpg?raw=true" width="700" height="400" /></a>
+<a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-20%20030500.jpg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/Screenshot%202021-09-20%20030500.jpg?raw=true" width="700" height="400" /></a><br />
 <b> Transmit monitor </b><br/>
 ![image](https://user-images.githubusercontent.com/5867781/133961623-4fc6a201-7a79-41c7-88d8-905e20c020d2.png)
 
