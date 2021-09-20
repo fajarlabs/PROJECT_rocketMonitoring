@@ -218,7 +218,7 @@ void loraSendData(String data) {
 }
 
 String getBuildData() {
-    // x,y,z,azimuth,bearing,temperature,pressure,altitude,gps latitude,gps longitude,gps age, gps altitude, gps sat value, gps course, gps speed
+    // x,y,z,azimuth,bearing,directional, temperature,pressure,altitude,gps latitude,gps longitude,gps age, gps altitude, gps sat value, gps course, gps speed
     String delimiter = ",";
     String result = "<<DATA:";
     result += String(state_x);
@@ -315,7 +315,7 @@ void loop() {
     // timing GPS
     if (currentMillis - previousMillis_GpsNeo7 >= interval) {
         previousMillis_GpsNeo7 = currentMillis;
-        //readGPS();
+        readGPS();
     }
 
     // timing compass
