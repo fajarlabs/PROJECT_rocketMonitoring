@@ -1,6 +1,17 @@
 import serial
 import mysql.connector
 
+def insert_data(dict_data):
+    global cnx
+    print(dict_data)
+    cursor = cnx.cursor()
+    add_employee = ("INSERT INTO data_logger "
+                    "(compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+    cursor.execute(add_employee, dict_data)
+    cnx.commit()
+    cursor.close()
+
 def parsing_data(lora_data):
     try :
         if ("<<DATA:" in lora_data) and (">>" in lora_data) :
@@ -27,6 +38,8 @@ def parsing_data(lora_data):
             gps_course = float(lora_data[14])
             gps_speed = float(lora_data[15])
             rssi = float(lora_data[16])
+            insert_data((compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi))
+
         else :
             print("No data found!")
     except Exception as e :
