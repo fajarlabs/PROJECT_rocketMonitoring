@@ -6,11 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css">
     <link href="/static/plugins/fontawesome-free-5.15.4-web/css/all.css" rel="stylesheet" type="text/css" />
     <link href="/static/css/compassRoss.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css" type="text/css">
+    <style>
+      .map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/build/ol.js"></script>
 
     <style type="text/css">
         body {
@@ -90,51 +96,92 @@
                     <table style="margin-top:3px;" class="table table-striped table-bordered table-dark">
                       <thead>
                         <tr>
-                          <th scope="col">#</th>
+                          <th scope="col">Timestamp</th>
+                          <th scope="col">X</th>
+                          <th scope="col">Y</th>
+                          <th scope="col">Z</th>
                           <th scope="col">Azimuth</th>
-                          <th scope="col">Compas</th>
-                          <th scope="col">Latitude</th>
-                          <th scope="col">Longitude</th>
-                          <th scope="col">DataX</th>
-                          <th scope="col">DataY</th>
-                          <th scope="col">DataZ</th>
+                          <th scope="col">Bearing</th>
+                          <th scope="col">Direction</th>
+                          <th scope="col">Temperature</th>
+                          <th scope="col">Pressure</th>
+                          <th scope="col">altitude</th>
+                          <th scope="col">GPS Latitude</th>
+                          <th scope="col">GPS Longitude</th>
+                          <th scope="col">GPS Altitude</th>
+                          <th scope="col">GPS Age</th>
+                          <th scope="col">GPS Sat</th>
+                          <th scope="col">GPS Course</th>
+                          <th scope="col">GPS Speed</th>
+                          <th scope="col">RSSI</th>
                         </tr>
                       </thead>
                       <tbody>
+
                         <tr>
-                          <th scope="row">1</th>
-                          <td>1</td>
-                          <td>EAST  90°</td>
-                          <td>-6.200000</td>
-                          <td>106.816666</td>
-                          <td>-100</td>
-                          <td>100</td>
-                          <td>50</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>1</td>
-                          <td>EAST  90°</td>
-                          <td>-6.200000</td>
-                          <td>106.816666</td>
-                          <td>-100</td>
-                          <td>100</td>
-                          <td>50</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>1</td>
-                          <td>EAST  90°</td>
-                          <td>-6.200000</td>
-                          <td>106.816666</td>
-                          <td>-100</td>
-                          <td>100</td>
-                          <td>50</td>
+                          <td id="tms"></td>
+                          <td id="x"></td>
+                          <td id="y"></td>
+                          <td id="z"></td>
+                          <td id="azimuth"></td>
+                          <td id="bearing"></td>
+                          <td id="direction"></td>
+                          <td id="temperature"></td>
+                          <td id="pressure"></td>
+                          <td id="altitude"></td>
+                          <td id="gps_latitude"></td>
+                          <td id="gps_longitude"></td>
+                          <td id="gps_altitude"></td>
+                          <td id="gps_age"></td>
+                          <td id="gps_sat"></td>
+                          <td id="gps_course"></td>
+                          <td id="gps_speed"></td>
+                          <td id="rssi"></td>
                         </tr>
                       </tbody>
                     </table>
                 </div>
             </div>
+
+    <div class="row">
+        <div class="col-md-12" style="padding:0 !important;">
+            <div id="map" class="map"></div>
+            <script type="text/javascript">
+              var map = new ol.Map({
+                target: 'map',
+                layers: [
+                  new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                  })
+                ],
+                view: new ol.View({
+                  center: ol.proj.fromLonLat([ 107.68213482329772, -7.661243419310371]),
+                  zoom: 15
+                })
+              });
+
+              var centerLongitudeLatitude = ol.proj.fromLonLat([107.68213482329772, -7.661243419310371]);
+              var layer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                  projection: 'EPSG:4326',
+                  features: [new ol.Feature(new ol.geom.Circle(centerLongitudeLatitude, 300))]
+                }),
+                style: [
+                  new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                      color: 'blue',
+                      width: 3
+                    }),
+                    fill: new ol.style.Fill({
+                      color: 'rgba(0, 0, 255, 0.1)'
+                    })
+                  })
+                ]
+              });
+              map.addLayer(layer);
+            </script>
+        </div>
+    </div>
 </div>
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/jQueryRotate.2.2.js"></script>        
@@ -150,6 +197,27 @@
                     $('.imgB1').rotate({ angle:i,animateTo:j,easing: $.easing.easeInOutExpo });
                     i = j;
             },1000);
+
+            $.get( "/data/last_one", function( json ) {
+              $('#tms').html('').html(json.data[18]);
+              $('#x').html('').html(json.data[1]);
+              $('#y').html('').html(json.data[2]);
+              $('#z').html('').html(json.data[3]);
+              $('#azimuth').html('').html(json.data[4]);
+              $('#bearing').html('').html(json.data[5]);
+              $('#direction').html('').html(json.data[6]);
+              $('#temperature').html('').html(json.data[7]);
+              $('#pressure').html('').html(json.data[8]);
+              $('#altitude').html('').html(json.data[9]);
+              $('#gps_latitude').html('').html(json.data[10]);
+              $('#gps_longitude').html('').html(json.data[11]);
+              $('#gps_age').html('').html(json.data[12]);
+              $('#gps_altitude').html('').html(json.data[13]);
+              $('#gps_sat').html('').html(json.data[14]);
+              $('#gps_course').html('').html(json.data[15]);
+              $('#gps_speed').html('').html(json.data[16]);
+              $('#rssi').html('').html(json.data[17]);
+            });
         })
     </script>
 <script type="text/javascript">

@@ -46,9 +46,16 @@ def get_last_one():
     try :
         cnx = mysql.connector.connect(**config)
         cur = cnx.cursor()
-        query = "(SELECT * FROM data_logger ORDER BY ctime DESC limit 1)"
+
+        query = "(SELECT id FROM data_profile WHERE is_active = '1' and is_delete = '0')"
         cur.execute(query)
         result = cur.fetchone()
+        if result != None :
+            query = "(SELECT * FROM data_logger WHERE profile_id = %s ORDER BY ctime DESC limit 1)"
+            cur.execute(query, (result[0],))
+            result = cur.fetchone()
+        else :
+            result = []
         cur.close()
     except Exception as e :
         print(e)
@@ -108,7 +115,7 @@ def get_active_profile():
     return jsonify({ "status" : "ok", "data" : result })
 
 @app.context_processor
-def example():
+def var_profile_list():
     cnx = None
     result = []
     try :
@@ -124,6 +131,31 @@ def example():
         if cnx != None :
             cnx.close()
     return dict(profile_list=list(result))
+
+@app.context_processor
+def var_last_data():
+    cnx = None
+    result = []
+    try :
+        cnx = mysql.connector.connect(**config)
+        cur = cnx.cursor()
+
+        query = "(SELECT id FROM data_profile WHERE is_active = '1' and is_delete = '0')"
+        cur.execute(query)
+        result = cur.fetchone()
+        if result != None :
+            query = "(SELECT * FROM data_logger WHERE profile_id = %s ORDER BY ctime DESC limit 1)"
+            cur.execute(query, (result[0],))
+            result = cur.fetchone()
+        else :
+            result = []
+        cur.close()
+    except Exception as e :
+        print(e)
+    finally :
+        if cnx != None :
+            cnx.close()
+    return dict(last_data=list(result))
 
 @app.route('/data/get_all_profile', methods = ['GET'])
 def get_all_profile():
