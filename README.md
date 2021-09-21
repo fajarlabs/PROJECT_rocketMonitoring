@@ -28,7 +28,8 @@ Show sample data <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring
 ![image](https://user-images.githubusercontent.com/5867781/133961623-4fc6a201-7a79-41c7-88d8-905e20c020d2.png)
 
 # Monitoring dashboard
-![image](https://user-images.githubusercontent.com/5867781/134023783-f34db6f0-1b68-42d9-9fd7-195fd8b6af13.png)
+![image](https://user-images.githubusercontent.com/5867781/134233651-7ba48ff3-86cb-4f42-b385-6353bebfdabd.png)
+
 
 # Components
 - Atmega / STM TX & RX module <Br />
