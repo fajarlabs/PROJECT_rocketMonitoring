@@ -48,7 +48,8 @@ def parsing_data(lora_data):
 if __name__ == "__main__":
     config = {
         'user': 'root',
-        'password': '123456789',
+        #'password': '123456789',
+        'password':'',
         'host': '127.0.0.1',
         'database': 'rocket_lapan',
         'raise_on_warnings': True
