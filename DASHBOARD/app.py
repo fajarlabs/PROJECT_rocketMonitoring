@@ -1,4 +1,4 @@
-from flask import Flask, render_template, Response
+from flask import Flask, render_template, Response, redirect, url_for
 import cv2
 from flask import jsonify
 import mysql.connector
@@ -107,6 +107,43 @@ def get_active_profile():
 
     return jsonify({ "status" : "ok", "data" : result })
 
+@app.context_processor
+def example():
+    cnx = None
+    result = []
+    try :
+        cnx = mysql.connector.connect(**config)
+        cur = cnx.cursor()
+        query = "(SELECT * FROM data_profile WHERE is_delete = '0')"
+        cur.execute(query)
+        result = cur.fetchall()
+        cur.close()
+    except Exception as e :
+        print(e)
+    finally :
+        if cnx != None :
+            cnx.close()
+    return dict(profile_list=list(result))
+
+@app.route('/data/get_all_profile', methods = ['GET'])
+def get_all_profile():
+    cnx = None
+    result = []
+    try :
+        cnx = mysql.connector.connect(**config)
+        cur = cnx.cursor()
+        query = "(SELECT * FROM data_profile WHERE is_delete = '0')"
+        cur.execute(query)
+        result = cur.fetchall()
+        cur.close()
+    except Exception as e :
+        print(e)
+    finally :
+        if cnx != None :
+            cnx.close()
+
+    return jsonify({ "status" : "ok", "data" : result })
+
 @app.route('/data/add_profile', methods = ['POST'])
 def add_profile():
     cnx = None
@@ -130,7 +167,8 @@ def add_profile():
         if cnx != None :
             cnx.close()
 
-    return jsonify({ "status" : "ok", "description" : "Data has been saved successfully" })
+    #return jsonify({ "status" : "ok", "description" : "Data has been saved successfully" })
+    return redirect("/", code=303)
 
 @app.route('/data/set_profile/<id>', methods = ['GET', 'POST'])
 def set_profile(id):
@@ -154,7 +192,9 @@ def set_profile(id):
         if cnx != None :
             cnx.close()
 
-    return jsonify({ "status" : "ok", "description" : "Profile has been successfully activated" })
+    # return jsonify({ "status" : "ok", "description" : "Profile has been successfully activated" })
+    #return redirect(url_for('/'))
+    return redirect("/", code=303)
 
 @app.route('/data/delete_profile/<id>', methods = ['DELETE'])
 def delete_profile(id):
