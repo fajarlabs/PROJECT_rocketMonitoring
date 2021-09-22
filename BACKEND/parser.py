@@ -1,16 +1,67 @@
 import serial
 import mysql.connector
+import serial.tools.list_ports
+#import win32com.client
+
+def list_usb():
+    '''
+    wmi = win32com.client.GetObject ("winmgmts:")
+    for usb in wmi.InstancesOf ("Win32_USBHub"):
+        # print usb.DeviceID
+        # pprint.pprint (dir(usb))
+        # pprint.pprint (vars(usb))
+        # print usb.__dict__
+        print ('Device ID:', usb.DeviceID)
+        print ('Name:', usb.name)
+        print ('System Name:', usb.SystemName)
+        print ('Caption:', usb.Caption)
+        print ('Caption:', usb.Caption)
+        print ('ClassCode:', usb.ClassCode)
+        print ('CreationClassName:', usb.CreationClassName)
+        print ('CurrentConfigValue:', usb.CurrentConfigValue)
+        print ('Description:', usb.Description)
+        print ('PNPDeviceID:', usb.PNPDeviceID)
+        print ('Status:', usb.Status)
+        print ('\n')
+    '''
+    ports = serial.tools.list_ports.comports()
+    for port, desc, hwid in sorted(ports):
+            print("{}: {} [{}]".format(port, desc, hwid))
 
 def insert_data(dict_data):
-    global cnx
-    print(dict_data)
-    cursor = cnx.cursor()
-    add_employee = ("INSERT INTO data_logger "
-                    "(compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
-    cursor.execute(add_employee, dict_data)
-    cnx.commit()
-    cursor.close()
+    cnx = None
+    try :
+        cnx = mysql.connector.connect(**config)
+        cursor = cnx.cursor()
+        add_employee = ("INSERT INTO data_logger "
+                        "(compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi, profile_id) "
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+        cursor.execute(add_employee, dict_data)
+        cnx.commit()
+        cursor.close()
+    except Exception as e :
+        print(e)
+    finally :
+        if cnx != None :
+            cnx.close()
+
+def get_active_profile():
+    cnx = None
+    result = 1
+    try :
+        cnx = mysql.connector.connect(**config)
+        cur = cnx.cursor()
+        query = "(SELECT id FROM data_profile WHERE is_active = '1')"
+        cur.execute(query)
+        fetch_query = cur.fetchone()
+        result = fetch_query[0]
+        cur.close()
+    except Exception as e :
+        print(e)
+    finally :
+        if cnx != None :
+            cnx.close()
+    return result
 
 def parsing_data(lora_data):
     try :
@@ -38,7 +89,8 @@ def parsing_data(lora_data):
             gps_course = float(lora_data[14])
             gps_speed = float(lora_data[15])
             rssi = float(lora_data[16])
-            insert_data((compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi))
+            profile_id = get_active_profile()
+            insert_data((compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi, profile_id))
 
         else :
             print("No data found!")
@@ -54,9 +106,10 @@ if __name__ == "__main__":
         'database': 'rocket_lapan',
         'raise_on_warnings': True
     }
-    cnx = mysql.connector.connect(**config)
 
-    ser = serial.Serial('COM10')
+    list_usb()
+
+    ser = serial.Serial('COM8')
     ser.baudrate = 115200
     while True:
         try:

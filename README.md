@@ -16,7 +16,7 @@ Sensor accelerator ADXL345 di lepas, dijadikan satu di sensor kompas
 # Receive Data
 Format data : <br />
 ```shell
-<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, gps latitude, gps longitude, gps altitude, gps sat value, gps course, gps speed, rssi>>
+<<DATA:compas_x, compas_y, compas_z, azimuth, bearing, direction, temperature, pressure, altitude, gps latitude, gps longitude, gps age, gps altitude, gps sat value, gps course, gps speed, rssi>>
 
 <<DATA:-1428,-393,205,196,8,  S,31.95,100289.39,86.58,-6.367715,106.800340,535,119.80,8,0.00,2.41,-62>>
 ```
