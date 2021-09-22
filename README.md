@@ -13,7 +13,7 @@ Sensor accelerator ADXL345 di lepas, dijadikan satu di sensor kompas
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/VIEW_3D.png?raw=true"><img width="400" height="400"  src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/VIEW_3D.png?raw=true" alt="schematic3d" border="0" width="700" height="400" ></a><br />
 # Physical
 <a href="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/WhatsApp%20Image%202021-09-18%20at%2012.25.23%20PM.jpeg?raw=true" ><img src="https://github.com/fajarlabs/PROJECT_rocket_monitoring/blob/main/DESAIN_PCB/WhatsApp%20Image%202021-09-18%20at%2012.25.23%20PM.jpeg?raw=true" width="500" height="400" /></a>
-<a href="https://user-images.githubusercontent.com/5867781/134273984-3a0263b5-d8f7-4227-9a46-c7460e715129.png" ><img src="https://user-images.githubusercontent.com/5867781/134273984-3a0263b5-d8f7-4227-9a46-c7460e715129.png" width="500" height="400" /></a>
+<a href="https://user-images.githubusercontent.com/5867781/134273984-3a0263b5-d8f7-4227-9a46-c7460e715129.png" ><img src="https://user-images.githubusercontent.com/5867781/134273984-3a0263b5-d8f7-4227-9a46-c7460e715129.png" width="300" height="400" /></a>
 
 # Receive Data
 Format data : <br />
