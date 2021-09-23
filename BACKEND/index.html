@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://bl.ocks.org/Niekes/raw/5e1254ae778e2854f0079350a0376528/d3-3d.js"></script>
+<body>
+<svg width="960" height="500"></svg>
+<script>
+    var origin  = [480, 250], startAngle = Math.PI/8, beta = 0;
+    var data    = [[{x:-1,y:-1,z:-1},{x:0,y:1,z:0},{x:1,y:-1,z:-1}],[{x:-1,y:-1,z:1},{x:0,y:1,z:0},{x:1,y:-1,z:1}],[{x:-1,y:-1,z:1},{x:0,y:1,z:0},{x:-1,y:-1,z:-1}],[{x:1,y:-1,z:1},{x:0,y:1,z:0},{x:1,y:-1,z:-1}]];
+    var svg     = d3.select('svg').call(d3.drag().on('drag', dragged).on('start', dragStart).on('end', dragEnd)).append('g');
+    var mx, mouseX;
+
+
+
+    var _3d = d3._3d()
+        .scale(300)
+        .distance(3)
+        .origin(origin)
+        .projection('persp')
+        .rotateY(startAngle)
+        .primitiveType('TRIANGLES');
+
+    var data3D  = _3d(data);
+
+    function dragStart(){
+        mx = d3.event.x;
+    }
+
+    function dragged(){
+        mouseX = mouseX || 0;
+        beta   = (d3.event.x - mx + mouseX) * Math.PI / 360 * (-1);
+        processData(_3d.rotateY(beta + startAngle)(data));
+    }
+
+    function dragEnd(){
+        mouseX = d3.event.x - mx + mouseX;
+    }
+
+    function processData(data){
+
+        var triangles = svg.selectAll('path').data(data);
+
+        triangles
+            .enter()
+            .append('path')
+            .merge(triangles)
+            .attr('stroke', d3.color('black'))
+            .attr('fill', 'none')
+            .attr('d', _3d.draw);
+
+        triangles.exit().remove();
+    }
+
+    processData(data3D);
+</script>
+</body>

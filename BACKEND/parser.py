@@ -35,7 +35,7 @@ def insert_data(dict_data):
         cursor = cnx.cursor()
         add_employee = ("INSERT INTO data_logger "
                         "(compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi, profile_id) "
-                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
         cursor.execute(add_employee, dict_data)
         cnx.commit()
         cursor.close()
