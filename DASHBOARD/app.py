@@ -3,6 +3,7 @@ import cv2
 from flask import jsonify
 import mysql.connector
 from flask import request
+import random
 
 app = Flask(__name__)
 
@@ -65,8 +66,8 @@ def get_last_one():
 
     return jsonify({ "status" : "ok", "data" : result })
 
-@app.route('/data/get_all_current', methods = ['GET'])
-def get_all_current():
+@app.route('/data/get_current_data', methods = ['GET'])
+def get_current_data():
     cnx = None
     result = []
     description = ""
@@ -261,7 +262,7 @@ def delete_profile(id):
 @app.route('/', methods = ['GET'])
 def index():
     """Video streaming home page."""
-    return render_template('index.html')
+    return render_template('index.html', rand=random.randrange(100, 1000))
 
 
 if __name__ == '__main__':
