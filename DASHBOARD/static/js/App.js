@@ -1,4 +1,13 @@
 window.data_list = [];
+window.data_current = [];
+
+$("#overlay").fadeIn(300);
+jQuery.ajaxSetup({async:false});
+$.get( "/data/get_current_data?limit=30", function( json ) {
+    window.data_current = json;
+});
+$("#overlay").fadeOut(300);
+jQuery.ajaxSetup({async:true});
 
 var map = new ol.Map({
   target: 'map',
@@ -32,12 +41,28 @@ var layer = new ol.layer.Vector({
   ]
 });
 
+var markers = new ol.layer.Vector({
+  source: new ol.source.Vector(),
+  style: new ol.style.Style({
+    image: new ol.style.Icon({
+      anchor: [1, 1],
+      src: '/static/img/navigation.png',
+      scale: 0.4,
+      rotation:15
+    })
+  })
+});
+map.addLayer(markers);
+
+var marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([107.68213482329772, -7.661243419310371])));
+markers.getSource().addFeature(marker);
+
 map.addLayer(layer);
 
 $(document).ready(function() {            
     $('#nav').CompassRose({pos: 0});
-
     var last_bearing = 0;
+
     setInterval(function() {
         var data_list = [];
         window.data_list.forEach(function(row){
@@ -70,47 +95,44 @@ $(document).ready(function() {
         }], {
           height: 440
         });
-
     },1000);
     
-    // setInterval(function() {
-    //     $.get( "/data/last_one", function( json ) {
+    setInterval(function() {
+        $.get( "/data/last_one", function( json ) {
+            window.data_list.push(...[json.data]);
 
-    //         window.data_list.push(...[json.data]);
+            var new_bearing = parseInt(json.data[5]);
+            new_bearing = 22.5 * new_bearing;
+            if(last_bearing != new_bearing) {
+                /*
+                - Getting 16 point Azimuth bearing direction (0 - 15).
+                - Getting 16 point Azimuth bearing Names (N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW)
+                */
+                $('.imgB1').rotate({ angle:last_bearing,animateTo:new_bearing,easing: $.easing.easeInOutExpo });
+                last_bearing = new_bearing;
+            }
 
-    //         var new_bearing = parseInt(json.data[5]);
-    //         new_bearing = 22.5 * new_bearing;
-    //         if(last_bearing != new_bearing) {
-    //             /*
-    //             - Getting 16 point Azimuth bearing direction (0 - 15).
-    //             - Getting 16 point Azimuth bearing Names (N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW)
-    //             */
-    //             $('.imgB1').rotate({ angle:last_bearing,animateTo:new_bearing,easing: $.easing.easeInOutExpo });
-    //             last_bearing = new_bearing;
-    //         }
-
-    //         $('#tms').html('').html(json.data[18]);
-    //         $('#x').html('').html(json.data[1]);
-    //         $('#y').html('').html(json.data[2]);
-    //         $('#z').html('').html(json.data[3]);
-    //         $('#azimuth').html('').html(json.data[4]);
-    //         $('#bearing').html('').html(json.data[5]);
-    //         $('#direction').html('').html(json.data[6]);
-    //         $('#temperature').html('').html(json.data[7]);
-    //         $('#pressure').html('').html(json.data[8]);
-    //         $('#altitude').html('').html(json.data[9]);
-    //         $('#gps_latitude').html('').html(json.data[10]);
-    //         $('#gps_longitude').html('').html(json.data[11]);
-    //         $('#gps_age').html('').html(json.data[12]);
-    //         $('#gps_altitude').html('').html(json.data[13]);
-    //         $('#gps_sat').html('').html(json.data[14]);
-    //         $('#gps_course').html('').html(json.data[15]);
-    //         $('#gps_speed').html('').html(json.data[16]);
-    //         $('#rssi').html('').html(json.data[17]);
-
-            
-    //     });
-    // },333);
+            $('#tms').html('').html(json.data[18]);
+            $('#x').html('').html(json.data[1]);
+            $('#y').html('').html(json.data[2]);
+            $('#z').html('').html(json.data[3]);
+            $('#azimuth').html('').html(json.data[4]);
+            $('#bearing').html('').html(json.data[5]);
+            $('#direction').html('').html(json.data[6]);
+            $('#title-nav').html('').html(json.data[6]+" Az-"+json.data[4]);
+            $('#temperature').html('').html(json.data[7]);
+            $('#pressure').html('').html(json.data[8]);
+            $('#altitude').html('').html(json.data[9]);
+            $('#gps_latitude').html('').html(json.data[10]);
+            $('#gps_longitude').html('').html(json.data[11]);
+            $('#gps_age').html('').html(json.data[12]);
+            $('#gps_altitude').html('').html(json.data[13]);
+            $('#gps_sat').html('').html(json.data[14]);
+            $('#gps_course').html('').html(json.data[15]);
+            $('#gps_speed').html('').html(json.data[16]);
+            $('#rssi').html('').html(json.data[17]);         
+        });
+    },333);
 });
 
 Highcharts.theme = {
@@ -306,111 +328,59 @@ Highcharts.theme = {
         trackBorderColor: '#404043'
     }
 };
+
 // Apply the theme
 Highcharts.setOptions(Highcharts.theme);
 
+var dt_altitude = [];
+var dt_temperature = [];
 
-var data_list = [];
-var dt_series = [];
+var i = 0;
+window.data_current.data.forEach(function(data) {
+	if(i > 50){
+	} else {
+    dt_altitude.push({ x : (new Date(data[18])).getTime(), y : parseFloat(data[9]) } );
+    dt_temperature.push({ x : (new Date(data[18])).getTime(), y : parseFloat(data[7]) } );
+	}
+    i++;
+});
 
-    window.data_list.forEach(function(row){
-        data_list.push({temperature: row[7], altitude: row[9], speed: row[16], color: '2'});
-    });
 
-    function unpack(rows, key) {
-        return rows.map(function(row){ 
-            return row[key]; 
-        }); 
+Highcharts.setOptions({
+    global: {
+        useUTC: false
     }
+});
 
-    dt_series.push({
-        name: 'Altitude',
-        data: (function () {
-        // generate an array of random data
-        var data = [],
-            time = (new Date()).getTime(),
-            i;
-
-        for (i = -19; i <= 0; i += 1) {
-            data.push({
-                x: time + i * 1000,
-                y: Math.random()
-            });
-        }
-        return data;
-        }())
-    });
-
-    dt_series.push({
-        name: 'Temperature',
-        data: (function () {
-        // generate an array of random data
-        var data = [],
-            time = (new Date()).getTime(),
-            i;
-
-        for (i = -19; i <= 0; i += 1) {
-            data.push({
-                x: time + i * 1000,
-                y: Math.random()
-            });
-        }
-        return data;
-        }())
-    });
-
-Highcharts.chart('chart2', {
+var chart;
+$('#chart2').highcharts({
     chart: {
         type: 'spline',
         animation: Highcharts.svg, // don't animate in old IE
         marginRight: 10,
         events: {
-            load: function () {
-                // // set up the updating of the chart each second
-                // var series0 = this.series[0];
-                // setInterval(function () {
-                //     var x = (new Date()).getTime(), // current time
-                //         y = Math.random();
-                //     series0.addPoint([x, y], true, true);
-                // }, 1000);
+            load: function() {
 
-                // var series1 = this.series[1];
-                // setInterval(function () {
-                //     var x = (new Date()).getTime(), // current time
-                //         y = Math.random();
-                //     series1.addPoint([x, y], true, true);
-                // }, 1000);
+                // set up the updating of the chart each second
+                var series_alt = this.series[0];
+                var series_temp = this.series[1];
+                setInterval(function() {
+                    $.get( "/data/last_one", function( json ) {
+                        series_alt.addPoint([(new Date(json.data[18])).getTime(),parseFloat(json.data[9])], false, true);
+                        series_temp.addPoint([(new Date(json.data[18])).getTime(),parseFloat(json.data[7])], true, true);
+                    });
+                }, 1000);
             }
         }
     },
-
-    time: {
-        useUTC: false
-    },
-
     title: {
         text: 'Live data'
     },
-
-    accessibility: {
-        announceNewData: {
-            enabled: true,
-            minAnnounceInterval: 15000,
-            announcementFormatter: function (allSeries, newSeries, newPoint) {
-                if (newPoint) {
-                    return 'New point added. Value: ' + newPoint.y;
-                }
-                return false;
-            }
-        }
-    },
-
     xAxis: {
         type: 'datetime',
         tickPixelInterval: 150
     },
-
-    yAxis: {
+    yAxis: [{
         title: {
             text: 'Value'
         },
@@ -419,20 +389,25 @@ Highcharts.chart('chart2', {
             width: 1,
             color: '#808080'
         }]
-    },
-
+    }],
     tooltip: {
-        headerFormat: '<b>{series.name}</b><br/>',
-        pointFormat: '{point.x:%Y-%m-%d %H:%M:%S}<br/>{point.y:.2f}'
+        formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+
+                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+                Highcharts.numberFormat(this.y, 2);
+        }
     },
-
     legend: {
         enabled: true
     },
-
     exporting: {
         enabled: true
     },
-
-    series: dt_series
+    series: [{
+        name: 'Altitude',
+        data: dt_altitude
+    },{
+        name: 'Temperature',
+        data: dt_temperature
+    }]
 });

@@ -33,11 +33,48 @@
         .row {
             border: 1px solid #ccc;
         }
+
+        #overlay{ 
+          position: fixed;
+          top: 0;
+          z-index: 100;
+          width: 100%;
+          height:100%;
+          display: none;
+          background: rgba(0,0,0,0.6);
+        }
+        .cv-spinner {
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;  
+        }
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 4px #ddd solid;
+          border-top: 4px #2e93e6 solid;
+          border-radius: 50%;
+          animation: sp-anime 0.8s infinite linear;
+        }
+        @keyframes sp-anime {
+          100% { 
+            transform: rotate(360deg); 
+          }
+        }
+        .is-hide{
+          display:none;
+        }
     </style>
 
     <title>Rocket Monitoring & Demonstration</title>
 </head>
 <body>
+<div id="overlay">
+  <div class="cv-spinner">
+    <span class="spinner"></span>
+  </div>
+</div>
 <div class="container" >
     <div class="row" style="border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;padding:0 !important;">
         <div class="col-md-6">
@@ -55,10 +92,12 @@
                         <center><img class="" src="{{ url_for('video_feed') }}" style="width:100%;margin: 0;"></center>
                 </div>
                 <div   id="nav" align="middle" class="col-md-6" style="background-color: #fff; ">
-                    <span class="badge badge-warning">Compass Navigator</span>
-                    <br /><br />
-                    <div id="nav" ></div>   
+                    <span class="badge badge-warning">Compass Navigator</span><br />
+                    <h5 id="title-nav">NNEW</h5>
+                    <div id="nav" ></div> 
                 </div>
+
+
             </div>
             <div class="row">
                 <div class="col-md-12" style="padding:3px;">

@@ -7,7 +7,7 @@ import random
 
 app = Flask(__name__)
 
-camera = cv2.VideoCapture(0)  # use 0 for web camera
+camera = cv2.VideoCapture(2)  # use 0 for web camera
 #  for cctv camera use rtsp://username:password@ip_address:554/user=username_password='password'_channel=channel_number_stream=0.sdp' instead of camera
 # for local webcam use cv2.VideoCapture(0)
 
@@ -68,6 +68,8 @@ def get_last_one():
 
 @app.route('/data/get_current_data', methods = ['GET'])
 def get_current_data():
+    limit = int(request.args.get('limit',0))
+    print(limit)
     cnx = None
     result = []
     description = ""
@@ -79,8 +81,12 @@ def get_current_data():
         cur.execute(query)
         result = cur.fetchone()
         if result != None :
-            query = "(SELECT * FROM data_logger WHERE profile_id = %s ORDER BY ctime DESC )"
-            cur.execute(query, (result[0],))
+            if limit == 0 :
+                query = "(SELECT * FROM data_logger WHERE profile_id = %s ORDER BY ctime DESC )"
+                cur.execute(query, (result[0],))
+            else :
+                query = "(SELECT * FROM data_logger WHERE profile_id = %s ORDER BY ctime DESC LIMIT %s )"
+                cur.execute(query, (result[0],limit,))
             result = cur.fetchall()
             description = "Show current data"
         else :
@@ -268,8 +274,8 @@ def index():
 if __name__ == '__main__':
     config = {
         'user': 'root',
-        #'password': '123456789',
-        'password':'',
+        'password': '123456789',
+        #'password':'',
         'host': '127.0.0.1',
         'database': 'rocket_lapan',
         'raise_on_warnings': True
