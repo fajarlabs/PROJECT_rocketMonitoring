@@ -11,6 +11,10 @@
     <link href="/static/css/compassRoss.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.7.0/css/ol.css" type="text/css">
     <style type="text/css">
+        @font-face {
+          font-family:"Orbitron";
+          src: url("/static/fonts/Orbitron/Orbitron-VariableFont_wght.ttf") format("truetype");
+        }
         .map {
           height: 400px;
           width: 100%;
@@ -65,6 +69,24 @@
         .is-hide{
           display:none;
         }
+        .blink_me {
+          animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {  
+          50% { opacity: 0; }
+        }
+
+        .clock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            color: #17D4FE;
+            font-size: 30px;
+            font-family: Orbitron;
+            letter-spacing: 7px;
+        }
     </style>
 
     <title>Rocket Monitoring & Demonstration</title>
@@ -75,7 +97,13 @@
     <span class="spinner"></span>
   </div>
 </div>
+
 <div class="container" >
+    <div class="row">
+      <div class="col-md-12" style="height: 40px;">
+        <div id="MyClockDisplay" class="clock" onload="showTime()"></div>
+      </div>
+    </div>
     <div class="row" style="border-top: 1px solid #ccc;border-bottom: 1px solid #ccc;padding:0 !important;">
         <div class="col-md-6">
             <div class="row" style="border-right: 1px solid #ccc;border-left: 1px solid #ccc;">
@@ -115,7 +143,7 @@
 </form>
 {% for i in profile_list  %}
     {% if i[2] == 1 %}
-    <a href="#" class="btn btn-sm btn-warning" >{{ i[1] }}</a>
+    <a href="#" class="blink_me btn btn-sm btn-danger disabled" >{{ i[1] }}</a>
     {% endif %}
     {% if i[2] == 0 %}
     <a href="/data/set_profile/{{i[0]}}" class="btn btn-sm btn-success">{{ i[1] }}</a>

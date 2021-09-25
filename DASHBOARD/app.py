@@ -4,12 +4,33 @@ from flask import jsonify
 import mysql.connector
 from flask import request
 import random
+import base64
+import threading
 
 app = Flask(__name__)
 
 camera = cv2.VideoCapture(2)  # use 0 for web camera
 #  for cctv camera use rtsp://username:password@ip_address:554/user=username_password='password'_channel=channel_number_stream=0.sdp' instead of camera
 # for local webcam use cv2.VideoCapture(0)
+
+def thread_save_picture(img_base64):
+    cnx = None
+    result = []
+    try:
+        cnx = mysql.connector.connect(**config)
+        cur = cnx.cursor()
+
+        query_insert = ("INSERT INTO data_photo (photo) VALUES (%s)")
+        item_data = (img_base64,)
+        cur.execute(query_insert, item_data)
+
+        cnx.commit()
+        cur.close()
+    except Exception as e:
+        print(e)
+    finally:
+        if cnx != None:
+            cnx.close()
 
 def gen_frames():  # generate frame by frame from camera
     while True:
@@ -19,6 +40,9 @@ def gen_frames():  # generate frame by frame from camera
             break
         else:
             ret, buffer = cv2.imencode('.jpg', frame)
+            jpg_as_text = base64.b64encode(buffer)
+            x = threading.Thread(target=thread_save_picture, args=(jpg_as_text,))
+            x.start()
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
