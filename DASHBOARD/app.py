@@ -9,7 +9,7 @@ import threading
 
 app = Flask(__name__)
 
-camera = cv2.VideoCapture(2)  # use 0 for web camera
+camera = cv2.VideoCapture(0)  # use 0 for web camera
 #  for cctv camera use rtsp://username:password@ip_address:554/user=username_password='password'_channel=channel_number_stream=0.sdp' instead of camera
 # for local webcam use cv2.VideoCapture(0)
 
@@ -40,9 +40,9 @@ def gen_frames():  # generate frame by frame from camera
             break
         else:
             ret, buffer = cv2.imencode('.jpg', frame)
-            jpg_as_text = base64.b64encode(buffer)
-            x = threading.Thread(target=thread_save_picture, args=(jpg_as_text,))
-            x.start()
+            # jpg_as_text = base64.b64encode(buffer)
+            # x = threading.Thread(target=thread_save_picture, args=(jpg_as_text,))
+            # x.start()
             frame = buffer.tobytes()
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  # concat frame one by one and show result
@@ -298,8 +298,8 @@ def index():
 if __name__ == '__main__':
     config = {
         'user': 'root',
-        'password': '123456789',
-        #'password':'',
+        #'password': '123456789',
+        'password':'',
         'host': '127.0.0.1',
         'database': 'rocket_lapan',
         'raise_on_warnings': True

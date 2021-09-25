@@ -69,7 +69,7 @@ def get_last_id_photo():
     try :
         cnx = mysql.connector.connect(**config)
         cur = cnx.cursor()
-        query = "(SELECT id FROM data_video ORDER BY ctime DESC LIMIT 1)"
+        query = "(SELECT id FROM data_photo ORDER BY ctime DESC LIMIT 1)"
         cur.execute(query)
         fetch_query = cur.fetchone()
         result = fetch_query[0]
@@ -108,7 +108,7 @@ def parsing_data(lora_data):
             gps_speed = float(lora_data[15])
             rssi = float(lora_data[16])
             profile_id = get_active_profile()
-            photo_id = get_last_id_photo()
+            photo_id = 0
             insert_data((compas_x, compas_y, compas_z, azimuth, bearing, directional, temperature, pressure, altitude, gps_latitude, gps_longitude, gps_age, gps_altitude, gps_sat_value, gps_course, gps_speed, rssi, profile_id, photo_id))
 
         else :

@@ -17,12 +17,12 @@ var map = new ol.Map({
     })
   ],
   view: new ol.View({
-    center: ol.proj.fromLonLat([ 107.68213482329772, -7.661243419310371]),
+    center: ol.proj.fromLonLat([ 106.83095860193352, -6.417478416411434]),
     zoom: 15
   })
 });
 
-var centerLongitudeLatitude = ol.proj.fromLonLat([107.68213482329772, -7.661243419310371]);
+var centerLongitudeLatitude = ol.proj.fromLonLat([106.83095860193352, -6.417478416411434]);
 var layer = new ol.layer.Vector({
   source: new ol.source.Vector({
     projection: 'EPSG:4326',
@@ -40,22 +40,6 @@ var layer = new ol.layer.Vector({
     })
   ]
 });
-
-var markers = new ol.layer.Vector({
-  source: new ol.source.Vector(),
-  style: new ol.style.Style({
-    image: new ol.style.Icon({
-      anchor: [1, 1],
-      src: '/static/img/navigation.png',
-      scale: 0.4,
-      rotation:15
-    })
-  })
-});
-map.addLayer(markers);
-
-var marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([107.68213482329772, -7.661243419310371])));
-markers.getSource().addFeature(marker);
 
 map.addLayer(layer);
 
@@ -97,6 +81,8 @@ $(document).ready(function() {
         });
     },1000);
     
+
+    var last_markers = "";
     setInterval(function() {
         $.get( "/data/last_one", function( json ) {
             window.data_list.push(...[json.data]);
@@ -111,6 +97,25 @@ $(document).ready(function() {
                 $('.imgB1').rotate({ angle:last_bearing,animateTo:new_bearing,easing: $.easing.easeInOutExpo });
                 last_bearing = new_bearing;
             }
+
+            var markers = new ol.layer.Vector({
+              source: new ol.source.Vector(),
+              style: new ol.style.Style({
+                image: new ol.style.Icon({
+                  anchor: [1, 1],
+                  src: '/static/img/navigation.png',
+                  scale: 0.4,
+                  rotation:parseInt(json.data[5])
+                })
+              })
+            });
+   
+            var marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([106.83095860193352, -6.417478416411434])));
+            markers.getSource().addFeature(marker);
+
+            map.removeLayer(last_markers);
+            map.addLayer(markers);
+            last_markers = markers;
 
             $('#tms').html('').html(json.data[18]);
             $('#x').html('').html(json.data[1]);
